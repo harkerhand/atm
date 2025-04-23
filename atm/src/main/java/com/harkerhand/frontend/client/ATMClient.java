@@ -179,7 +179,8 @@ public class ATMClient implements Callable<Integer> {
             System.out.println("1. 查询余额");
             System.out.println("2. 存款");
             System.out.println("3. 取款");
-            System.out.println("4. 登出");
+            System.out.println("4. 修改密码");
+            System.out.println("5. 登出");
             System.out.print(colorText("请选择: ", AnsiColor.YELLOW));
 
             String choice = console.readLine();
@@ -222,6 +223,26 @@ public class ATMClient implements Callable<Integer> {
                     }
                     break;
                 case "4":
+                    clearScreen();
+                    System.out.println(colorText("=== 修改密码 ===", AnsiColor.BLUE));
+                    System.out.print("请输入原密码: ");
+                    char[] oldPassword = console.readPassword();
+                    System.out.print("请输入新密码: ");
+                    char[] newPassword = console.readPassword();
+                    System.out.print("请再次输入新密码: ");
+                    char[] confirmPassword = console.readPassword();
+
+                    if (new String(newPassword).equals(new String(confirmPassword))) {
+                        request.put("action", "change_password");
+                        request.put("oldPassword", new String(oldPassword));
+                        request.put("newPassword", new String(newPassword));
+                        sendRequestAndPrintResponse(request, console);
+                    } else {
+                        System.out.println(colorText("错误: 两次输入的新密码不一致", AnsiColor.RED));
+                        waitForKeyPress(console);
+                    }
+                    break;
+                case "5":
                     request.put("action", "logout");
                     out.println(request.toString());
                     System.out.println(colorText("您已成功登出", AnsiColor.GREEN));

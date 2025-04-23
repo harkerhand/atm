@@ -58,4 +58,8 @@ public class User implements Serializable {
     public void setBalance(double balance) {
         this.balance = balance;
     }
+
+    public void setPassword(String newPassword) {
+        this.password = newPassword;
+    }
 }

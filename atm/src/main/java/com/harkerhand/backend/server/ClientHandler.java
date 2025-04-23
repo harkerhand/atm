@@ -61,6 +61,9 @@ public class ClientHandler implements Runnable {
                     case "logout":
                         response = handleLogout(request);
                         break;
+                    case "change_password":
+                        response = handleChangePassword(request);
+                        break;
                     default:
                         ObjectNode errorResponse = mapper.createObjectNode();
                         errorResponse.put("status", "error");
@@ -242,6 +245,42 @@ public class ClientHandler implements Runnable {
         } else {
             response.put("status", "error");
             response.put("message", "用户未登录");
+        }
+
+        return response.toString();
+    }
+
+    private String handleChangePassword(JsonNode request) {
+        String username = request.path("username").asText();
+        String oldPassword = request.path("oldPassword").asText();
+        String newPassword = request.path("newPassword").asText();
+
+        ObjectNode response = mapper.createObjectNode();
+
+        if (!onlineUsers.containsKey(username) || !isUserSessionValid(username)) {
+            response.put("status", "error");
+            response.put("message", "用户未登录");
+            return response.toString();
+        }
+
+        User user = UserStorage.getUser(username);
+        if (user != null) {
+            if (user.validatePassword(oldPassword)) {
+                user.setPassword(newPassword);
+                UserStorage.updateUser(user);
+
+                response.put("status", "success");
+                response.put("message", "密码修改成功");
+                logger.info("用户修改密码: " + username);
+                UserActivityLogger.logPasswordChange(username, true);
+            } else {
+                response.put("status", "error");
+                response.put("message", "原密码错误");
+                UserActivityLogger.logPasswordChange(username, false);
+            }
+        } else {
+            response.put("status", "error");
+            response.put("message", "用户不存在");
         }
 
         return response.toString();
