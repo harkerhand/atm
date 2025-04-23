@@ -1,7 +1,9 @@
 package com.harkerhand.backend.storage;
 
+import com.harkerhand.backend.log.UserActivityLogger;
 import com.harkerhand.backend.model.User;
 import java.io.*;
+import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
@@ -62,5 +64,48 @@ public class UserStorage {
             users.put(user.getUsername(), user);
             saveUsers();
         }
+    }
+
+    /**
+     * 获取所有用户
+     * 
+     * @return 所有用户的集合
+     */
+    public static Collection<User> getAllUsers() {
+        return users.values();
+    }
+
+    /**
+     * 为所有用户账户添加利息
+     * 
+     * @param rate 利息率（如0.05表示5%）
+     * @return 更新的账户数量
+     */
+    public static synchronized int applyInterestToAllAccounts(double rate) {
+        int count = 0;
+        // 遍历所有用户并应用利息
+        for (User user : getAllUsers()) {
+            if (user.getBalance() > 0) {
+                double interest = user.getBalance() * rate;
+                user.setBalance(user.getBalance() + interest);
+
+                // 记录利息添加事件
+                try {
+                    UserActivityLogger
+                            .logInterestAddition(
+                                    user.getUsername(),
+                                    "INTEREST_ADDED",
+                                    "Added interest: " + String.format("%.2f", interest));
+                } catch (Exception e) {
+                    logger.warning("Failed to log interest addition for user " + user.getUsername());
+                }
+
+                count++;
+            }
+        }
+
+        // 保存更新后的用户数据
+        saveUsers();
+        return count;
     }
 }

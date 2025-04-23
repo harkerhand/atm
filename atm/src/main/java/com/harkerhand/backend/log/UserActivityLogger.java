@@ -135,6 +135,17 @@ public class UserActivityLogger {
     }
 
     /**
+     * 记录利息添加事件
+     *
+     * @param username    用户名
+     * @param action      动作类型
+     * @param description 描述信息
+     */
+    public static void logInterestAddition(String username, String action, String description) {
+        logger.info(String.format("INTEREST: User '%s' - %s - %s", username, action, description));
+    }
+
+    /**
      * 关闭日志系统
      */
     public static void shutdown() {

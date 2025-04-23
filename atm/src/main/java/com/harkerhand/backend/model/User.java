@@ -1,9 +1,17 @@
 package com.harkerhand.backend.model;
 
-public class User {
+import java.io.Serializable;
+
+public class User implements Serializable {
+    // 添加序列化版本ID
+    private static final long serialVersionUID = 1L;
+
     private String username;
     private String password;
     private double balance;
+
+    // 如果有不需要序列化的字段，使用transient修饰
+    // transient private SomeNonSerializableType someField;
 
     public User(String username, String password) {
         this.username = username;
