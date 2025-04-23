@@ -91,20 +91,6 @@ public class UserActivityLogger {
     }
 
     /**
-     * 记录用户转账
-     * 
-     * @param fromUsername 转出用户
-     * @param toUsername   转入用户
-     * @param amount       金额
-     * @param success      是否成功
-     */
-    public static void logTransfer(String fromUsername, String toUsername, double amount, boolean success) {
-        String status = success ? "successful" : "failed";
-        logger.info(String.format("TRANSFER: User '%s' transferred %.2f to '%s' - %s",
-                fromUsername, amount, toUsername, status));
-    }
-
-    /**
      * 记录用户密码修改
      * 
      * @param username 用户名
